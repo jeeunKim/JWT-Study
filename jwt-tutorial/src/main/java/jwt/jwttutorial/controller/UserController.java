@@ -3,6 +3,8 @@ package jwt.jwttutorial.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import jwt.jwttutorial.dto.RefreshTokenDto;
+import jwt.jwttutorial.dto.TokenDto;
 import jwt.jwttutorial.dto.UserDto;
 import jwt.jwttutorial.service.UserService;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +36,7 @@ public class UserController {
     public ResponseEntity<UserDto> signup(@Valid @RequestBody UserDto userDto) {
         return ResponseEntity.ok(userService.signup(userDto));
     }
+
 
     @GetMapping("/user")
     @PreAuthorize("hasAnyRole('USER','ADMIN')")

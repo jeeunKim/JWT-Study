@@ -3,6 +3,7 @@ package jwt.jwttutorial.jwt;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jwt.jwttutorial.dto.TokenDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -48,7 +49,7 @@ public class TokenProvider implements InitializingBean {
     /*
         Access 토큰 생성
      */
-    public String createToken(Authentication authentication) {
+    public TokenDto createToken(Authentication authentication) {
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
@@ -56,29 +57,28 @@ public class TokenProvider implements InitializingBean {
         long now = (new Date()).getTime();
         Date validity = new Date(now + this.tokenValidityInMilliseconds);
 
-        return Jwts.builder()
+        String accessToken = Jwts.builder()
                 .setSubject(authentication.getName())
                 .claim(AUTHORITIES_KEY, authorities)
                 .signWith(key, SignatureAlgorithm.HS512)
                 .setExpiration(validity)
                 .compact();
-    }
 
-    /*
-        Refresh 토큰 생성 - 미완
-     */
-    public String createRefreshToken(Authentication authentication) {
-        long now = (new Date()).getTime();
-        Date validity = new Date(now + this.tokenRefreshValidityInMilliseconds);
+        Date validity2 = new Date(now + this.tokenRefreshValidityInMilliseconds);
 
-        return Jwts.builder()
+        String refreshToken = Jwts.builder()
+                .setSubject(authentication.getName())
+                .claim(AUTHORITIES_KEY, authorities)
                 .signWith(key, SignatureAlgorithm.HS512)
-                .setExpiration(validity)
+                .setExpiration(validity2)
                 .compact();
+
+        return new TokenDto(accessToken, refreshToken);
     }
 
+
     /*
-        토큰으로 Authentication객체를 반환
+        토큰으로 Authentication 객체를 반환
         토큰을 통해 클레임을 얻고, 클래임으로 user, 토큰, 권한 정보를 담은 Authentication 객체 반환
      */
     public Authentication getAuthentication(String token) {
