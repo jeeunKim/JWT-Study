@@ -31,7 +31,7 @@ public class User {
     @Column(name = "activated")
     private boolean activated; //활성화 여부
 
-    @Column(name = "refreshToken")
+    @Column(name = "refresh_token")
     private String refreshToken;
 
     @ManyToMany

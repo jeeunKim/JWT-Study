@@ -60,7 +60,7 @@ public class SecurityConfig {
 
                 //토큰이 없는 상태로 들어오는 요청이기 때문에 permitAll (허용)
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
-                        .requestMatchers("/api/hello", "/api/authenticate", "/api/signup").permitAll()
+                        .requestMatchers("/api/hello", "/api/authenticate", "/api/signup", "/api/refresh").permitAll()
                         .anyRequest().authenticated()
                 )
 
