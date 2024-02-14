@@ -1,12 +1,15 @@
 package jwt.jwttutorial.service;
 
+import jwt.jwttutorial.dto.LoginDto;
 import jwt.jwttutorial.dto.TokenDto;
 import jwt.jwttutorial.entity.User;
 import jwt.jwttutorial.jwt.TokenProvider;
 import jwt.jwttutorial.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import jwt.jwttutorial.util.SecurityUtil;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -19,6 +22,7 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final TokenProvider tokenProvider;
+    private final PasswordEncoder passwordEncoder;
 
     public void updateRefreshToken(String username, String refreshToken){
         Optional<User> userOptional = userRepository.findByUsername(username);
@@ -48,6 +52,20 @@ public class AuthService {
         });
 
         return tokenDto.get();
+    }
+
+    public void loginCheck(LoginDto loginDto){
+        Optional<User> optionalUser = userRepository.findByUsername(loginDto.getUsername());
+
+        if (optionalUser.isEmpty()) {
+            throw new RuntimeException("존재하지 않는 사용자입니다.");
+        }
+
+        User user = optionalUser.get();
+
+        if (!passwordEncoder.matches(loginDto.getPassword(), user.getPassword())) {
+            throw new RuntimeException("비밀번호가 일치하지 않습니다.");
+        }
     }
 
     public void logout(String refreshToken){

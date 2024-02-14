@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import jwt.jwttutorial.dto.LoginDto;
 import jwt.jwttutorial.dto.RefreshTokenDto;
 import jwt.jwttutorial.dto.TokenDto;
+import jwt.jwttutorial.exception.DuplicateMemberException;
 import jwt.jwttutorial.jwt.JwtFilter;
 import jwt.jwttutorial.jwt.TokenProvider;
 import jwt.jwttutorial.service.AuthService;
@@ -27,8 +28,13 @@ public class AuthController {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final AuthService authService;
 
+    /*
+     로그인 - 토큰 발급
+     */
     @PostMapping("/authenticate")
     public ResponseEntity<TokenDto> authorize(@Valid @RequestBody LoginDto loginDto) {
+        authService.loginCheck(loginDto);
+
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword());
 
