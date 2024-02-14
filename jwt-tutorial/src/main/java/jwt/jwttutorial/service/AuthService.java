@@ -49,4 +49,17 @@ public class AuthService {
 
         return tokenDto.get();
     }
+
+    public void logout(String refreshToken){
+        /*
+            Access Token 도 삭제해야함
+            밑에는 Refresh Token 삭제
+         */
+        Optional<User> optionalUser = userRepository.findByRefreshToken(refreshToken);
+        optionalUser.ifPresent(user -> {
+            user.setRefreshToken(null);
+            userRepository.save(user);
+        });
+
+    }
 }
